@@ -1,0 +1,7 @@
+name: media-stack  # Optional: Gives your project a nice name in 'docker compose ls'
+
+include:
+  - path:
+      - ./media-server-stack/docker-compose.yml
+      - ./media-download-stack/docker-compose.yml
+      - ./media-content-stack/docker-compose.yml

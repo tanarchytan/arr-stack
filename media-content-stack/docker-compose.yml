@@ -13,14 +13,6 @@ services:
     ports:
       - "9696:9696"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prowlarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/prowlarr`)"
-      - "traefik.http.routers.prowlarr.entrypoints=websecure"
-      - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
-      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
-      - "traefik.http.middlewares.prowlarr-stripprefix.stripprefix.prefixes=/prowlarr"
-      - "traefik.http.routers.prowlarr.middlewares=prowlarr-stripprefix,lan-only"
     deploy:
       resources:
         limits:
@@ -47,14 +39,6 @@ services:
     ports:
       - "8989:8989"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.sonarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/sonarr`)"
-      - "traefik.http.routers.sonarr.entrypoints=websecure"
-      - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
-      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
-      - "traefik.http.middlewares.sonarr-stripprefix.stripprefix.prefixes=/sonarr"
-      - "traefik.http.routers.sonarr.middlewares=sonarr-stripprefix,lan-only"
     deploy:
       resources:
         limits:
@@ -81,14 +65,6 @@ services:
     ports:
       - "7878:7878"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.radarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/radarr`)"
-      - "traefik.http.routers.radarr.entrypoints=websecure"
-      - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
-      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
-      - "traefik.http.middlewares.radarr-stripprefix.stripprefix.prefixes=/radarr"
-      - "traefik.http.routers.radarr.middlewares=radarr-stripprefix,lan-only"
     deploy:
       resources:
         limits:
@@ -115,14 +91,6 @@ services:
     ports:
       - "8686:8686"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.lidarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/lidarr`)"
-      - "traefik.http.routers.lidarr.entrypoints=websecure"
-      - "traefik.http.routers.lidarr.tls.certresolver=cloudflare"
-      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
-      - "traefik.http.middlewares.lidarr-stripprefix.stripprefix.prefixes=/lidarr"
-      - "traefik.http.routers.lidarr.middlewares=lidarr-stripprefix,lan-only"
     deploy:
       resources:
         limits:
@@ -149,14 +117,6 @@ services:
     ports:
       - "6767:6767"
     restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.bazarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/bazarr`)"
-      - "traefik.http.routers.bazarr.entrypoints=websecure"
-      - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
-      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
-      - "traefik.http.middlewares.bazarr-stripprefix.stripprefix.prefixes=/bazarr"
-      - "traefik.http.routers.bazarr.middlewares=bazarr-stripprefix,lan-only"
     deploy:
       resources:
         limits:
