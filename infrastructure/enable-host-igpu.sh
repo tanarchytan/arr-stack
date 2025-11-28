@@ -2,11 +2,14 @@
 
 # Proxmox Host iGPU Enablement Script
 # Configures GRUB and Kernel Modules for Intel iGPU Passthrough/GVT-g.
+# Optimized for headless servers (disables framebuffers).
 # Requires reboot to take effect.
 
 # --- Configuration ---
-# Intel iGPU kernel parameters
-GRUB_CMD_ADD="intel_iommu=on i915.enable_gvt=1"
+# Full optimized command line for headless Plex transcoding
+# Includes passthrough mode and disables host display drivers to free up the GPU
+GRUB_CMD_TARGET="quiet intel_iommu=on i915.enable_gvt=1 iommu=pt video=efifb:off video=vesafb:off"
+
 MODULES_TO_ADD=("kvmgt" "vfio-iommu-type1" "vfio-mdev")
 
 # --- Main Script ---
@@ -16,15 +19,18 @@ echo "Configuring Proxmox Host for Intel iGPU..."
 # 1. Configure GRUB
 GRUB_FILE="/etc/default/grub"
 if [ -f "$GRUB_FILE" ]; then
+    # Read current default line (stripping quotes)
     CURRENT_CMD=$(grep "^GRUB_CMDLINE_LINUX_DEFAULT=" "$GRUB_FILE" | cut -d'"' -f2)
     
-    if [[ "$CURRENT_CMD" != *"$GRUB_CMD_ADD"* ]]; then
+    # Check if our target settings are present. 
+    # Simple check: if it doesn't contain our key flags, we update.
+    # Using a loose check for key components to avoid constant overwrites if order differs.
+    if [[ "$CURRENT_CMD" != *"intel_iommu=on"* ]] || [[ "$CURRENT_CMD" != *"i915.enable_gvt=1"* ]]; then
         echo "Updating GRUB config..."
-        # Backup
         cp "$GRUB_FILE" "${GRUB_FILE}.bak"
         
-        # Append settings to GRUB_CMDLINE_LINUX_DEFAULT
-        sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=\"\(.*\)\"/GRUB_CMDLINE_LINUX_DEFAULT=\"\1 $GRUB_CMD_ADD\"/" "$GRUB_FILE"
+        # Replace the line entirely with our optimized version
+        sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\"$GRUB_CMD_TARGET\"|" "$GRUB_FILE"
         
         echo "Running update-grub..."
         update-grub
@@ -33,7 +39,7 @@ if [ -f "$GRUB_FILE" ]; then
         echo "GRUB already configured for iGPU."
     fi
 else
-    echo "Error: $GRUB_FILE not found (Are you running this on Proxmox?)"
+    echo "Error: $GRUB_FILE not found."
     exit 1
 fi
 
@@ -58,7 +64,7 @@ else
     echo "Kernel modules already configured."
 fi
 
-# 3. Verify Device Existence (Only works if already rebooted)
+# 3. Verify Device Existence
 if [ -e "/dev/dri/card0" ] || [ -e "/dev/dri/renderD128" ]; then
     echo "iGPU devices detected on host."
 else
