@@ -1,14 +1,16 @@
 #!/bin/bash
 cd /opt/stacks || exit
 
-# Check for changes
-if [[ -z $(git status -s) ]]; then
-  echo "No changes to commit."
-  exit 0
+if [[ -n $(git status -s) ]]; then
+  echo "Committing changes..."
+  git add .
+  git commit -m "Auto-backup: $(date +'%Y-%m-%d %H:%M')"
 fi
 
-echo "Changes detected. Committing..."
-git add .
-git commit -m "Auto-backup: Config update $(date +'%Y-%m-%d %H:%M')"
-git push origin main
-echo "✅ Pushed to Git."
+if [[ $(git log origin/main..HEAD --oneline | wc -l) -gt 0 ]]; then
+  echo "Pushing to GitHub..."
+  git push origin main
+  echo "✅ Done."
+else
+  echo "Nothing to push."
+fi
