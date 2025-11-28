@@ -1,7 +1,16 @@
-name: media-stack  # Optional: Gives your project a nice name in 'docker compose ls'
+name: media-stack
 
 include:
-  - path:
-      - ./media-server-stack/docker-compose.yml
-      - ./media-download-stack/docker-compose.yml
-      - ./media-content-stack/docker-compose.yml
+  - path: ./media-server-stack/docker-compose.yml
+    project_directory: ./media-server-stack
+
+  - path: ./media-download-stack/docker-compose.yml
+    project_directory: ./media-download-stack
+
+  - path: ./media-content-stack/docker-compose.yml
+    project_directory: ./media-content-stack
+
+networks:
+  media_internal:
+    driver: bridge
+    name: media_internal

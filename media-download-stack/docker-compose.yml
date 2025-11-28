@@ -85,8 +85,3 @@ services:
       - /opt/data/media/appdata/sabnzbd:/config
       - /mnt/arrdata:/data
     restart: unless-stopped
-
-networks:
-  media_internal:
-    external: true
-    name: media_internal
