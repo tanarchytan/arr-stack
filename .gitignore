@@ -1,0 +1,23 @@
+# Secrets & Envs (Never upload these!)
+*.env
+.env*
+!*.env.example
+!*.env.template
+secrets/
+*.key
+*.pem
+*.crt
+
+# Application Data & Logs (Too big/changing)
+appdata/
+data/
+logs/
+downloads/
+media/
+backups/
+
+# OS & IDE junk
+.DS_Store
+.vscode/
+.idea/
+*.old

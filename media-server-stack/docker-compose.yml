@@ -1,0 +1,102 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      # API and Dashboard
+      - --api.dashboard=true
+      - --api.debug=false
+      # Entrypoints
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      # Providers
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=media_internal
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --providers.file.watch=true
+      # Certificates (Cloudflare DNS Challenge)
+      - --certificatesresolvers.cloudflare.acme.storage=/data/acme.json
+      - --certificatesresolvers.cloudflare.acme.dnschallenge=true
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53
+    environment:
+      - CF_API_EMAIL_FILE=/run/secrets/cloudflare_email
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cloudflare_api_token
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/data/media/appdata/traefik/acme:/data
+      - /opt/data/media/appdata/traefik/dynamic:/etc/traefik/dynamic
+    secrets:
+      - cloudflare_email
+      - cloudflare_api_token
+    networks:
+      - media_internal
+    labels:
+      - "traefik.enable=true"
+      # --- Global Middleware Definition: LAN Only ---
+      # Allow 10.0.0.0/8 (LAN), 172.16.0.0/12 (Docker), 192.168.0.0/16 (LAN), 127.0.0.1 (Local)
+      - "traefik.http.middlewares.lan-only.ipallowlist.sourcerange=10.0.0.0/8,192.168.0.0/16,172.16.0.0/12,127.0.0.1/32"
+      - "traefik.http.middlewares.lan-only.ipallowlist.ipstrategy.depth=1"
+      # --- Traefik Dashboard Routing (LAN Only) ---
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.tanarchy.org`)"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls.certresolver=cloudflare"
+      # Apply Auth AND LAN-Only middleware
+      - "traefik.http.routers.dashboard.middlewares=dashboard-auth,lan-only"
+      # REPLACE THIS WITH YOUR GENERATED HASH
+      - "traefik.http.middlewares.dashboard-auth.basicauth.users=admin:$$2y$$05$$..." 
+
+  dockge:
+    image: louislam/dockge:latest
+    container_name: dockge
+    hostname: dockge
+    restart: unless-stopped
+    # Port 5001 kept as backup; remove if you want fully locked down via Traefik
+    ports:
+      - 5001:5001
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - dockge_data:/app/data
+      - /opt/stacks:/opt/stacks
+    environment:
+      - DOCKGE_STACKS_DIR=/opt/stacks
+    networks:
+      - media_internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.dockge.rule=Host(`dockge.tanarchy.org`)"
+      - "traefik.http.routers.dockge.entrypoints=websecure"
+      - "traefik.http.routers.dockge.tls.certresolver=cloudflare"
+      - "traefik.http.services.dockge.loadbalancer.server.port=5001"
+      # Apply LAN-Only Middleware
+      - "traefik.http.routers.dockge.middlewares=lan-only"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+
+secrets:
+  plex_claim:
+    file: ./secrets/plex_claim
+  cloudflare_email:
+    file: ./secrets/cloudflare_email
+  cloudflare_api_token:
+    file: ./secrets/cloudflare_api_token
+
+volumes:
+  dockge_data:
+    driver: local
+
+networks:
+  media_internal:
+    driver: bridge
+    name: media_internal

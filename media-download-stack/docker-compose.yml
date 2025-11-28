@@ -1,0 +1,92 @@
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.40
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    env_file:
+      - ./env/gluetun.env
+    environment:
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      - SERVER_COUNTRIES=Netherlands
+      - HTTPPROXY=on
+      - HTTPPROXY_LISTENING_ADDRESS=:8888
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_PROVIDER=protonvpn
+      - VPN_PORT_FORWARDING_STATUS_FILE=/gluetun/forwarded_port
+      - FIREWALL_OUTBOUND_SUBNETS=10.0.0.0/16
+    ports:
+      - "8080:8080"
+      - "8090:8090"
+      - "8888:8888"
+      - "8000:8000"
+    volumes:
+      - /opt/data/media/appdata/gluetun:/gluetun
+    restart: unless-stopped
+    networks:
+      - media_internal
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://google.com"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - WEBUI_PORT=8080
+    volumes:
+      - /opt/data/media/appdata/qbittorrent:/config
+      - /mnt/arrdata:/data
+    restart: unless-stopped
+
+  gluetun-qbittorrent-port-manager:
+    image: snoringdragon/gluetun-qbittorrent-port-manager:latest
+    container_name: gt-port-manager
+    network_mode: "service:gluetun"
+    restart: unless-stopped
+    environment:
+      - QBITTORRENT_SERVER=localhost
+      - QBITTORRENT_PORT=8080
+      - PORT_FORWARDED=/gluetun/forwarded_port
+      - GLUETUN_HOST=localhost
+      - GLUETUN_PORT=8000
+    volumes:
+      - /opt/data/media/appdata/gluetun:/gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
+      qbittorrent:
+        condition: service_started
+
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - /opt/data/media/appdata/sabnzbd:/config
+      - /mnt/arrdata:/data
+    restart: unless-stopped
+
+networks:
+  media_internal:
+    external: true
+    name: media_internal

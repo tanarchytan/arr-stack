@@ -1,0 +1,174 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    networks:
+      - media_internal
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - /opt/data/media/appdata/prowlarr:/config
+    ports:
+      - "9696:9696"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prowlarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/prowlarr`)"
+      - "traefik.http.routers.prowlarr.entrypoints=websecure"
+      - "traefik.http.routers.prowlarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.prowlarr.loadbalancer.server.port=9696"
+      - "traefik.http.middlewares.prowlarr-stripprefix.stripprefix.prefixes=/prowlarr"
+      - "traefik.http.routers.prowlarr.middlewares=prowlarr-stripprefix,lan-only"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    networks:
+      - media_internal
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - /opt/data/media/appdata/sonarr:/config
+      - /mnt/arrdata:/data
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.sonarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/sonarr`)"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+      - "traefik.http.routers.sonarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      - "traefik.http.middlewares.sonarr-stripprefix.stripprefix.prefixes=/sonarr"
+      - "traefik.http.routers.sonarr.middlewares=sonarr-stripprefix,lan-only"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    networks:
+      - media_internal
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - /opt/data/media/appdata/radarr:/config
+      - /mnt/arrdata:/data
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.radarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/radarr`)"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+      - "traefik.http.routers.radarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+      - "traefik.http.middlewares.radarr-stripprefix.stripprefix.prefixes=/radarr"
+      - "traefik.http.routers.radarr.middlewares=radarr-stripprefix,lan-only"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    networks:
+      - media_internal
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - /opt/data/media/appdata/lidarr:/config
+      - /mnt/arrdata:/data
+    ports:
+      - "8686:8686"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lidarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/lidarr`)"
+      - "traefik.http.routers.lidarr.entrypoints=websecure"
+      - "traefik.http.routers.lidarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.lidarr.loadbalancer.server.port=8686"
+      - "traefik.http.middlewares.lidarr-stripprefix.stripprefix.prefixes=/lidarr"
+      - "traefik.http.routers.lidarr.middlewares=lidarr-stripprefix,lan-only"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    networks:
+      - media_internal
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+    volumes:
+      - /opt/data/media/appdata/bazarr:/config
+      - /mnt/arrdata:/data
+    ports:
+      - "6767:6767"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.bazarr.rule=Host(`arr.tanarchy.org`) && PathPrefix(`/bazarr`)"
+      - "traefik.http.routers.bazarr.entrypoints=websecure"
+      - "traefik.http.routers.bazarr.tls.certresolver=cloudflare"
+      - "traefik.http.services.bazarr.loadbalancer.server.port=6767"
+      - "traefik.http.middlewares.bazarr-stripprefix.stripprefix.prefixes=/bazarr"
+      - "traefik.http.routers.bazarr.middlewares=bazarr-stripprefix,lan-only"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  media_internal:
+    external: true
+    name: media_internal
