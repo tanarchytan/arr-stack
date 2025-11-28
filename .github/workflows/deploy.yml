@@ -6,27 +6,23 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
-      - 'infrastructure/**'  # Don't redeploy containers if we just added a proxmox script
-      - '.github/**'
 
 jobs:
-  update-production:
-    runs-on: self-hosted  # <--- This targets your specific runner
+  deploy:
+    runs-on: self-hosted
     steps:
-      - name: Check for changes and deploy
+      - name: Update Infrastructure
         run: |
-          echo "🚀 Starting Deployment on TAN-ARR..."
-          cd /opt/stacks
-
-          # 1. Ensure we are on main and have latest code
+          echo "🚀 Deploying to TAN-ARR..."
+          
+          # Navigate to the actual repo location
+          cd /opt/stacks || { echo "Directory not found"; exit 1; }
+          
+          # Update Code
           git fetch origin main
           git reset --hard origin/main
-
-          # 2. Update Docker Stacks
-          # This reads the root docker-compose.yml which includes all others
+          
+          # Redeploy
           docker compose up -d --remove-orphans
-
-          # 3. Cleanup (Optional)
-          docker image prune -f
-
-          echo "✅ Deployment Complete"
+          
+          echo "✅ Done."
