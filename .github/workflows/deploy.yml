@@ -1,0 +1,32 @@
+name: Deploy Media Stack
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - 'infrastructure/**'  # Don't redeploy containers if we just added a proxmox script
+      - '.github/**'
+
+jobs:
+  update-production:
+    runs-on: self-hosted  # <--- This targets your specific runner
+    steps:
+      - name: Check for changes and deploy
+        run: |
+          echo "🚀 Starting Deployment on TAN-ARR..."
+          cd /opt/stacks
+
+          # 1. Ensure we are on main and have latest code
+          git fetch origin main
+          git reset --hard origin/main
+
+          # 2. Update Docker Stacks
+          # This reads the root docker-compose.yml which includes all others
+          docker compose up -d --remove-orphans
+
+          # 3. Cleanup (Optional)
+          docker image prune -f
+
+          echo "✅ Deployment Complete"
