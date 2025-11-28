@@ -6,23 +6,24 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
+      - 'infrastructure/**'
+      - '.github/**'
 
 jobs:
-  deploy:
+  update-production:
     runs-on: self-hosted
     steps:
-      - name: Update Infrastructure
+      - name: Update Code and Deploy
         run: |
-          echo "🚀 Deploying to TAN-ARR..."
+          echo "🚀 Starting Deployment on TAN-ARR..."
           
-          # Navigate to the actual repo location
-          cd /opt/stacks || { echo "Directory not found"; exit 1; }
+          cd /opt/stacks || { echo "❌ Directory /opt/stacks not found"; exit 1; }
           
-          # Update Code
           git fetch origin main
           git reset --hard origin/main
           
-          # Redeploy
           docker compose up -d --remove-orphans
           
-          echo "✅ Done."
+          docker image prune -f
+          
+          echo "✅ Deployment Complete"
