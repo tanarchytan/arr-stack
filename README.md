@@ -71,21 +71,6 @@ ssh root@proxmox-ip 'bash -s' < infrastructure/scripts/enable-host-igpu.sh
 **Manual Verification:**  
 Ensure `/etc/default/grub` contains `intel_iommu=on` and `/etc/modules` loads `kvmgt`, `vfio-iommu-type1`, and `vfio-mdev`.
 
-### 2. Deploy Plex LXC
-Automatically creates a privileged LXC container for Plex with:
-- **Static IP**: `10.0.0.215` (configurable)
-- **Storage**: `local-lvm` (10GB)
-- **Mounts**: Media folder `/mnt/arrdata`
-- **Hardware**: iGPU Passthrough enabled
-
-**Deploy Command:**
-```
-ssh root@proxmox-ip 'bash -s' < infrastructure/scripts/create-plex-lxc.sh
-```
-
-**Customization:**  
-Edit variables at the top of `infrastructure/scripts/create-plex-lxc.sh` to adjust settings like IP, CPU cores, or RAM before running.
-
 ---
 
 ## 🔄 CI/CD & Backups
