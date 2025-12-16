@@ -1,0 +1,92 @@
+---
+# Homepage Services Configuration
+# This file defines all your media stack services with their widgets and metrics
+
+- Media Management:
+    - Sonarr:
+        icon: sonarr.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:8989
+        description: TV Show Management
+        widget:
+          type: sonarr
+          url: http://sonarr:8989
+          key: {{HOMEPAGE_VAR_SONARR_API_KEY}}
+
+    - Radarr:
+        icon: radarr.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:7878
+        description: Movie Management
+        widget:
+          type: radarr
+          url: http://radarr:7878
+          key: {{HOMEPAGE_VAR_RADARR_API_KEY}}
+
+    - Lidarr:
+        icon: lidarr.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:8686
+        description: Music Management
+        widget:
+          type: lidarr
+          url: http://lidarr:8686
+          key: {{HOMEPAGE_VAR_LIDARR_API_KEY}}
+
+    - Bazarr:
+        icon: bazarr.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:6767
+        description: Subtitle Management
+        widget:
+          type: bazarr
+          url: http://bazarr:6767
+          key: {{HOMEPAGE_VAR_BAZARR_API_KEY}}
+
+    - Prowlarr:
+        icon: prowlarr.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:9696
+        description: Indexer Manager
+        widget:
+          type: prowlarr
+          url: http://prowlarr:9696
+          key: {{HOMEPAGE_VAR_PROWLARR_API_KEY}}
+
+- Request & Download:
+    - Overseerr:
+        icon: overseerr.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:5055
+        description: Media Requests
+        widget:
+          type: overseerr
+          url: http://overseerr:5055
+          key: {{HOMEPAGE_VAR_OVERSEERR_API_KEY}}
+
+    - qBittorrent:
+        icon: qbittorrent.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:8080
+        description: Torrent Client
+        widget:
+          type: qbittorrent
+          url: http://gluetun:8080
+          username: {{HOMEPAGE_VAR_QBITTORRENT_USER}}
+          password: {{HOMEPAGE_VAR_QBITTORRENT_PASS}}
+
+    - SABnzbd:
+        icon: sabnzbd.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:8090
+        description: Usenet Client
+        widget:
+          type: sabnzbd
+          url: http://gluetun:8090
+          key: {{HOMEPAGE_VAR_SABNZBD_API_KEY}}
+
+- Infrastructure:
+    - Dockge:
+        icon: dockge.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:5001
+        description: Docker Stack Manager
+
+    - Gluetun:
+        icon: gluetun.png
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:8000
+        description: VPN Client
+        widget:
+          type: gluetun
+          url: http://gluetun:8000

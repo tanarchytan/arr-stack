@@ -1,4 +1,29 @@
 services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    volumes:
+      - /opt/data/media/appdata/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - PUID=1000
+      - PGID=1000
+    networks:
+      - media_internal
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
   dockge:
     image: louislam/dockge:latest
     container_name: dockge
@@ -28,8 +53,3 @@ services:
 volumes:
   dockge_data:
     driver: local
-
-networks:
-  media_internal:
-    driver: bridge
-    name: media_internal

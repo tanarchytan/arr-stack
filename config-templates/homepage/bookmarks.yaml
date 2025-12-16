@@ -1,0 +1,31 @@
+---
+# Homepage Bookmarks Configuration
+# Quick links to useful resources
+
+- Useful Links:
+    - GitHub:
+        - icon: github.png
+          href: https://github.com
+          description: Source Code Repository
+
+    - Docker Hub:
+        - icon: docker.png
+          href: https://hub.docker.com
+          description: Container Images
+
+- Documentation:
+    - Servarr Wiki:
+        - icon: https://wiki.servarr.com/img/logo.png
+          href: https://wiki.servarr.com
+          description: Sonarr/Radarr/Lidarr Docs
+
+    - Trash Guides:
+        - icon: si-readthedocs
+          href: https://trash-guides.info
+          description: Quality Profiles & Setup
+
+- Community:
+    - r/selfhosted:
+        - icon: reddit.png
+          href: https://reddit.com/r/selfhosted
+          description: Self-Hosting Community

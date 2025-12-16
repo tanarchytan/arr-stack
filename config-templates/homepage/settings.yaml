@@ -1,0 +1,44 @@
+---
+# Homepage Settings Configuration
+
+title: Media Stack Dashboard
+favicon: https://gethomepage.dev/img/favicon.ico
+
+# Layout settings
+layout:
+  Media Management:
+    style: row
+    columns: 3
+  Request & Download:
+    style: row
+    columns: 3
+  Infrastructure:
+    style: row
+    columns: 2
+
+# Color scheme - choose: light, dark, or auto
+color: dark
+
+# Background image (optional)
+# background: /images/background.png
+
+# Theme options
+theme: dark
+
+# Show/hide elements
+showStats: true
+
+# Quick launch settings
+quicklaunch:
+  searchDescriptions: true
+  hideInternetSearch: false
+  hideVisitURL: false
+
+# Status style
+statusStyle: dot
+
+# Language
+language: en
+
+# Target for links
+target: _blank
